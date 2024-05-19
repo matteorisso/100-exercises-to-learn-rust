@@ -11,3 +11,80 @@
 // Integration here has a very specific meaning: they test **the public API** of your project.
 // You'll need to pay attention to the visibility of your types and methods; integration
 // tests can't access private or `pub(crate)` items.
+
+pub struct Order {
+    product_name: String,
+    quantity: u32,
+    unit_price: u32,
+}
+
+impl Order {
+    pub fn new(product_name: String, quantity: u32, unit_price: u32) -> Order {
+        Self::check_name_empty(&product_name);
+        Self::check_name_len(&product_name);
+        Self::check_quantity_is_pos(&quantity);
+        Self::check_price_is_pos(&unit_price);
+
+        Order {
+            product_name,
+            quantity,
+            unit_price,
+        }
+    }
+
+    pub fn total(&self) -> u32 {
+        &self.quantity * &self.unit_price
+    }
+
+    pub fn product_name(&self) -> &String {
+        &self.product_name
+    }
+
+    pub fn set_product_name(&mut self, new_name: String) {
+        Self::check_name_empty(&new_name);
+        Self::check_name_len(&new_name);
+        self.product_name = new_name;
+    }
+
+    pub fn quantity(&self) -> &u32 {
+        &self.quantity
+    }
+
+    pub fn set_quantity(&mut self, new_quantity: u32) {
+        Self::check_quantity_is_pos(&new_quantity);
+        self.quantity = new_quantity;
+    }
+
+    pub fn unit_price(&self) -> &u32 {
+        &self.unit_price
+    }
+
+    pub fn set_unit_price(&mut self, new_price: u32) {
+        Self::check_price_is_pos(&new_price);
+        self.unit_price = new_price;
+    }
+
+    fn check_name_empty(name: &String) {
+        if name.is_empty() {
+            panic!("Name cannot be empty!")
+        }
+    }
+
+    fn check_name_len(name: &String) {
+        if name.len() > 300 {
+            panic!("Name cannot be longer than 300 chars!")
+        }
+    }
+
+    fn check_quantity_is_pos(quantity: &u32) {
+        if *quantity == 0 {
+            panic!("Quantity cannot be smaller than 1!")
+        }
+    }
+
+    fn check_price_is_pos(price: &u32) {
+        if *price == 0 {
+            panic!("Price cannot be smaller than 1!")
+        }
+    }
+}
