@@ -2,7 +2,44 @@
 //   enforcing that the description is not empty and is not longer than 500 characters.
 //   Implement the traits required to make the tests pass too.
 
+#[derive(Debug, PartialEq, Clone)]
 pub struct TicketDescription(String);
+
+#[derive(Debug, thiserror::Error)]
+pub enum TicketDescriptionError {
+    #[error("The description cannot be empty")]
+    DescriptionCannotBeEmpty,
+    #[error("The description cannot be longer than 500 characters")]
+    DescriptionTooLong,
+}
+
+// I should define an enum with Error trait etc... but I want to understand why this approach does not work!
+impl TryFrom<String> for TicketDescription {
+    type Error = TicketDescriptionError;
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        if value.is_empty() {
+            return Err(TicketDescriptionError::DescriptionCannotBeEmpty);
+        }
+        if value.len() > 500 {
+            return Err(TicketDescriptionError::DescriptionTooLong);
+        }
+        Ok(TicketDescription(value))
+    }
+}
+
+impl TryFrom<&str> for TicketDescription {
+    type Error = TicketDescriptionError;
+    fn try_from(value: &str) -> Result<Self, Self::Error> {
+        let str_val = value.to_string();
+        if str_val.is_empty() {
+            return Err(TicketDescriptionError::DescriptionCannotBeEmpty);
+        }
+        if str_val.len() > 500 {
+            return Err(TicketDescriptionError::DescriptionTooLong);
+        }
+        Ok(TicketDescription(str_val))
+    }
+}
 
 #[cfg(test)]
 mod tests {
